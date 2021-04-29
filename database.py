@@ -8,6 +8,9 @@ from os import path
 from sys import argv, stderr, exit
 from psycopg2 import connect
 from random import randint
+import requests
+import json
+from urllib.parse import urlencode, quote
 #-----------------------------------------------------------------------
 
 class Database:
@@ -35,31 +38,75 @@ class Database:
         cursor = self._connection.cursor()
         QUERY_STRING = "SELECT * FROM activities"
         cursor.execute(QUERY_STRING)
-        lst_activities = cursor.fetchall()
+
+        activities_list = []
+        row = cursor.fetchone()
+        while row is not None:
+            activities_list.append(list(row))
+            row = cursor.fetchone()
         cursor.close()
-        return lst_activities
+
+        return activities_list
+
+    # Get all activities stored inside Database
+    def get_locations(self):
+        cursor = self._connection.cursor()
+        QUERY_STRING = "SELECT location FROM activities"
+        cursor.execute(QUERY_STRING)
+
+        location_list = []
+        row = cursor.fetchone()
+        while row is not None:
+            location_list.append(row[0])
+            row = cursor.fetchone()
+        cursor.close()
+
+        return location_list
 
     # Create activity
-    def create_activity(self, name, place, starttime, endtime, description, gmaps_url):
+    def create_activity(self, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, min_students, max_students, description):
         cursor = self._connection.cursor()
-        QUERY_STRING = "INSERT INTO activities (activity_counter, name, place, starttime, endtime, description, gmaps_url) VALUES (DEFAULT, %s, %s, %s, %s, %s, %s)"
-        cursor.execute(QUERY_STRING, [name, place, starttime, endtime, description, gmaps_url])
+        token = 'pk.eyJ1IjoiZ2xhbmlld3NraSIsImEiOiJja28weW13eHEwNWNwMnZzNTZyZzRrMDN4In0.P2-EylpYdzmCgdASgAKC5g'
+        parsed_location = quote(location+", Princeton, NJ 08544")
+        response = requests.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+parsed_location+".json?access_token="+token)
+        dict = json.loads(response.text)
+        lon, lat = dict['features'][0]['center']
+        QUERY_STRING = "INSERT INTO activities (id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description) VALUES (DEFAULT, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
+        cursor.execute(QUERY_STRING, [host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description])
+        self._connection.commit()
+        cursor.close()
+
+    # Create user
+    def create_user(self, net_id, name, residence, preferences, current_location, attending_events, created_events):
+        cursor = self._connection.cursor()
+        QUERY_STRING = "INSERT INTO users (net_id, name, residence, preferences, current_location, attending_events, created_events) VALUES (%s, %s, %s, %s, %s, %s, %s);"
+        cursor.execute(QUERY_STRING, [net_id, name, residence, repr(preferences), current_location, repr(attending_events), repr(created_events)])
         self._connection.commit()
         cursor.close()
 
     def reset_db(self):
         cursor = self._connection.cursor()
-        cursor.execute('DROP TABLE IF EXISTS activities')
+        cursor.execute('DROP TABLE IF EXISTS activities;')
+        cursor.execute('DROP TABLE IF EXISTS users;')
+
         cursor.execute('CREATE TABLE activities ' +
-            '(activity_counter SERIAL, name TEXT, place TEXT, starttime TEXT, endtime TEXT, description TEXT)')
+            '(id SERIAL, host_net_id INTEGER, host_name TEXT, title TEXT, type TEXT, \
+            date TEXT, start_time TEXT, end_time TEXT, phone_number TEXT, \
+            location TEXT, min_students INTEGER, max_students INTEGER, description TEXT);')
+
+        cursor.execute('CREATE TABLE users ' +
+            '(net_id INTEGER, name TEXT, residence TEXT, preferences BYTEA, current_location TEXT, attending_events BYTEA, created_events BYTEA);')
         cursor.close()
+
 
 #-----------------------------------------------------------------------
 
 if __name__ == "__main__":
     db = Database()
     db.connect()
-    db.create_activity("Party", "1915 Hall", "Celebrate end of semester")
+    db.create_activity("123", "Gabe", "End of Sem Party", "Party", "3200-12-24", "14%3A27", "14%3A28", "1234242132", "1915 Hall", "NaN", "NaN", "")
     print(db.get_activities())
-
+    print("\n\n")
+    lst_locations = db.get_locations()
+    print(lst_locations)
     db.disconnect()

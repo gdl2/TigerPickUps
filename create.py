@@ -25,10 +25,16 @@ def main(argv):
 
         #---------------------------------------------------------------
 
-        cursor.execute('DROP TABLE IF EXISTS activities')
+        cursor.execute('DROP TABLE IF EXISTS activities;')
+        cursor.execute('DROP TABLE IF EXISTS users;')
 
         cursor.execute('CREATE TABLE activities ' +
-            '(activity_counter SERIAL, name TEXT, place TEXT, starttime TEXT, endtime TEXT, description TEXT, gmaps_url TEXT)')
+            '(id SERIAL, host_net_id TEXT, host_name TEXT, title TEXT, type TEXT, \
+            date TEXT, start_time TEXT, end_time TEXT, phone_number TEXT, \
+            location TEXT, lat TEXT, lon TEXT, min_students TEXT, max_students TEXT, description TEXT);')
+
+        cursor.execute('CREATE TABLE users ' +
+            '(net_id INTEGER, name TEXT, residence TEXT, preferences BYTEA, current_location TEXT, attending_events BYTEA, created_events BYTEA);')
 
         connection.commit()
 

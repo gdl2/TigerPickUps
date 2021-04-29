@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='style.css') }}">
+
+        <link rel="icon" href="data:;base64,=">
+
+        <link href="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" rel="stylesheet" id="bootstrap-css">
+        <script src="//cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+        <script src="//maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+
+        <title>Form: Party</title>
+    </head>
+    <body>
+      {% include "navbar.html" %}
+
+      <form id="form">
+
+      <div class="container">
+        <div class="row">
+          <div class="col">
+            <h1>Party Form</h1>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+              <label for="host-net-id">Host*</label>
+              <input type="text" name="host-net-id" placeholder='pre-filled NETID' id="host-net-id" required>
+          </div>
+          <div class="col">
+              <label for="event-type">Event Type*</label>
+              <input type="text" name="event-type" value='Party' id="event-type" readonly="readonly" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+              <label for="event-title">Event Title*</label>
+              <input type="text" name="event-title" placeholder='Event Title' id="event-title" required>
+          </div>
+          <div class="col">
+              <label for="event-title">Date*</label>
+              <input type="date" name="date" id="date" required>
+          </div>
+        </div>
+
+        <div class="row">
+          <div class="col">
+              <label for="start-time">Start Time*</label>
+              <input type="time" name="start-time" id="start-time" required>
+          </div>
+          <div class="col">
+              <label for="end-time">End Time</label>
+              <input type="time" name="end-time" id="end-time">
+          </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+              <label for="phone-number">Phone Number</label>
+              <input type="text" placeholder="(xxx) xxx-xxxx" name="phone-number" id="phone-number">
+            </div>
+        </div>
+
+        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
+
+        <div class="row">
+            <div class="col-md-4">
+                <label>Location*</label>
+                <select class="select2" id="loc">
+                  <option>--None--</option>
+                  <option>Cannon Dial Elm Club</option>
+                  <option>Tower Club</option>
+                  <option>Terrace Club</option>
+                  <option>Cloister Inn</option>
+                  <option>Cap & Gown Club</option>
+                  <option>Ivy Club</option>
+                  <option>Quadrangle Club</option>
+                  <option>Charter Club</option>
+                  <option>Cottage Club</option>
+                  <option>Tiger Inn</option>
+                  <option>Colonial Club</option>
+                </select>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+              <label for="max-students">Max Students</label>
+              <input type="number" name="max-students" id="max-students">
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col">
+              <label for="description">Message from host</label>
+              <input type="text" name="description" id="description" class="form-control">
+            </div>
+        </div>
+
+        <br>
+        <div class="row">
+            <div class="col">
+              <input id="submit" class="btn btn-dark" type="submit" onclick="submitForm()" value="Create Your Event">
+            </div>
+        </div>
+      </div>
+      </form>
+
+      <script>
+          $("#form").submit(function(e) {
+            e.preventDefault();
+          });
+
+          function handleResponse(response) {
+            alert(response);
+            window.location.href = "/";
+          }
+
+          var request = null;
+
+          function submitForm() {
+            var host_net_id = $('#host-net-id').val();
+            var event_type = $('#event-type').val();
+            var event_title = $('#event-title').val();
+            var date = $('#date').val();
+            var start_time = $('#start-time').val();
+            var end_time = $('#end-time').val();
+            var phone_number = $('#phone-number').val();
+            var loc = $('#loc').select2('data')[0]['text'];
+            var min_students = $('#min-students').val();
+            var max_students = $('#max-students').val();
+            var description = $('#description').val();
+
+            if (host_net_id != '' && event_type != '' && event_title != '' && date != '' && start_time != '') {
+              if (loc == "--None--") {
+                alert("Please choose a location.");
+              }
+              else {
+                host_net_id = encodeURIComponent(host_net_id);
+                event_type = encodeURIComponent(event_type);
+                event_title = encodeURIComponent(event_title);
+                date = encodeURIComponent(date);
+                start_time = encodeURIComponent(start_time);
+                end_time = encodeURIComponent(end_time);
+                phone_number = encodeURIComponent(phone_number);
+                loc = encodeURIComponent(loc);
+                min_students = encodeURIComponent(min_students);
+                max_students = encodeURIComponent(max_students);
+                description = encodeURIComponent(description);
+
+
+                var url = '/save_form?host_net_id=' + host_net_id
+                   + '&event_type=' + event_type
+                   + '&event_title=' + event_title
+                   + '&date=' + date
+                   + '&start_time=' + start_time
+                   + '&end_time=' + end_time
+                   + '&phone_number=' + phone_number
+                   + '&loc=' + loc
+                   + '&min_students=' + min_students
+                   + '&max_students=' + max_students
+                   + '&description=' + description
+
+                console.log(url);
+
+                if (request != null) {
+                     request.abort();
+                   }
+
+                 request = $.ajax(
+                   {
+                     type: 'POST',
+                     url: url,
+                     success: handleResponse
+                   }
+                 );
+               }
+             }
+          }
+
+          function setup() {
+            $('.select2').select2();
+          }
+          $("document").ready(setup);
+      </script>
+    </body>
+</html>

@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='style.css') }}">
+
+        <title>Create Activity</title>
+    </head>
+    <body>
+      {% include "navbar.html" %}
+      <div class="container">
+            <center>
+              <h1>What is your activity?</h1>
+            </center>
+      </div>
+
+      <div class="container">
+        <div class="row">
+          <div class="col-sm-4">
+            <center>
+            <a href="/form-party">
+            <img src="static/images/party-icon.png" style="height:100px;">
+            <br>
+            <h2>Party</h2>
+            </a>
+            </center>
+          </div>
+          <div class="col-sm-4">
+            <center>
+            <a href="/form-sports">
+            <img src="static/images/sports-icon.png" style="height:100px;">
+            <br>
+            <h2>Sports</h2>
+            </a>
+            </center>
+          </div>
+          <div class="col-sm-4">
+            <center>
+            <a href="/form-general">
+            <img src="static/images/general-icon.png" style="height:100px;">
+            <br>
+            <h2>General</h2>
+            </a>
+            </center>
+          </div>
+        </div>
+      </div>
+    </body>
+</html>

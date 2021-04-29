@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+
+        <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='style.css') }}">
+
+        <title>About Us</title>
+    </head>
+    <body>
+      {% include "navbar.html" %}
+
+      <div class="container">
+      <h1>Project Description</h1>
+      <p>Welcome to TigerPickUps, the best way for all students to discover the
+        ins and outs of student life! Whether that be a pick-up soccer game on
+        Poe Field, an anime marathon in Frist, or an impromptu A Capella session
+         under Blair Arch, you will never be out of the loop using this brand-new
+          service. So get to scrolling and see what your fellow Princetonians are
+          up to</p>
+
+      <h1>Team Members</h1>
+      <h2>Allan Vo, Gabriel Laniewski, Britney Guo, Ibrahim Ayorinde, Aly Guindo</h2>
+      </div>
+    </body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta name="viewport" content="width=device-width, initial-scale=1"/>
+        <!-- Bootstrap CSS -->
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"/>
+
+        <link rel="stylesheet" type="text/css" href= "{{ url_for('static', filename='style.css') }}"/>
+
+        <link rel="icon" href="data:;base64,="/>
+
+        <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css"
+        integrity="sha512-xodZBNTC5n17Xt2atTPuE1HxjVMSvLVW9ocqUKLsCC5CXdbqCmblAshOMAS6/keqq/sMZMZ19scR4PsZChSR7A=="
+        crossorigin=""/>
+
+        <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"
+        integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
+        crossorigin=""></script>
+
+        <link rel="stylesheet" href="{{ url_for('static', filename='leaflet-search.css') }}" />
+
+        <title>Tiger PickUps</title>
+        <style>
+          #navbar {
+            position: absolute;
+            display: block;
+            width: 100%;
+            height: 60px;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: transparent;
+            z-index: 1;
+          }
+
+          img {
+            filter: drop-shadow(0 0 1rem orange);
+          }
+        </style>
+    </head>
+    <body>
+      {% include "navbar.html" %}
+
+      <div id="mapid" style="width: 100vw; height: 100vh; position: relative;"></div>
+
+      <script src="/static/leaflet-search.js"></script>
+      <script>
+        var mymap = L.map('mapid').setView([40.344863, -74.652751], 13);
+        mymap.addLayer(new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
+            attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
+            maxZoom: 18,
+            id: 'mapbox/streets-v11',
+            tileSize: 512,
+            zoomOffset: -1,
+            accessToken: '{{mapbox_access_token}}'
+        }));
+
+        var partyIcon = L.icon({
+            iconUrl: '/static/images/party-icon.png',
+            iconSize: [40, 40]
+        });
+
+        var sportsIcon = L.icon({
+            iconUrl: '/static/images/sports-icon.png',
+            iconSize: [40, 35]
+        });
+
+        var generalIcon = L.icon({
+            iconUrl: '/static/images/general-icon.png',
+            iconSize: [40, 40]
+        });
+
+        var markersLayer = new L.LayerGroup();	//layer contain searched elements
+
+      	mymap.addLayer(markersLayer);
+
+        var controlSearch = new L.Control.Search({
+      		position:'bottomleft',
+      		layer: markersLayer,
+      		initial: false,
+      		zoom: 12,
+      		marker: false
+      	});
+
+        mymap.addControl(controlSearch);
+
+        // Place all activities on map
+        // id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description
+        {% for activity in activities %}
+        var lat = {{activity[10]}};
+        var lon = {{activity[11]}};
+        var title = '{{activity[3]}}';
+        {% if activity[4]=="Party" %}
+        var icon = partyIcon;
+        {% endif %}
+        {% if activity[4]=="Sports" %}
+        var icon = sportsIcon;
+        {% endif %}
+        {% if activity[4]=="General" %}
+        var icon = generalIcon;
+        {% endif %}
+        console.log(title);
+        var marker = new L.marker(new L.latLng([lat, lon]), {icon: icon}, {title: title}); // .addTo(mymap);
+        marker.bindPopup("<b>Host:</b> {{activity[2]}} <br>\
+                          <b>Location:</b> {{activity[9]}} <br>\
+                          <b>Phone Num:</b> {{activity[8]}} <br>\
+                          <b>Max Capacity:</b> {{activity[13]}} <br>\
+                          <a href=\"https://www.google.com/maps/dir/?api=1&destination={{activity[9]}}\" target=\"_blank\">Get Directions</a>");
+        markersLayer.addLayer(marker);
+        {% endfor %}
+
+        var popup = L.popup()
+            .setLatLng([40.349193, -74.659288])
+            .setContent("<h4>Welcome to Tiger Pickups!</h4>\
+            <br>\
+            <b>You can:</b>\
+            <ul><li>Search for Campus Activities</li>\
+            <li>Create Activities for Friends to Join</li>\
+            </ul>\
+            <br>\
+            **Open only to Princeton students**")
+            .openOn(mymap);
+
+        mymap.zoomControl.setPosition('bottomright');
+
+      </script>
+
+
+
+    </body>
+</html>
