@@ -8,8 +8,8 @@ from os import path
 from sys import argv, stderr, exit
 from psycopg2 import connect
 from random import randint
-import requests
 import json
+from geopy.geocoders import Nominatim
 from urllib.parse import urlencode, quote
 #-----------------------------------------------------------------------
 
@@ -66,11 +66,14 @@ class Database:
     # Create activity
     def create_activity(self, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, min_students, max_students, description):
         cursor = self._connection.cursor()
-        token = 'pk.eyJ1IjoiZ2xhbmlld3NraSIsImEiOiJja28weW13eHEwNWNwMnZzNTZyZzRrMDN4In0.P2-EylpYdzmCgdASgAKC5g'
-        parsed_location = quote(location+", Princeton, NJ 08544")
-        response = requests.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+parsed_location+".json?access_token="+token)
-        dict = json.loads(response.text)
-        lon, lat = dict['features'][0]['center']
+        #token = 'pk.eyJ1IjoiZ2xhbmlld3NraSIsImEiOiJja28weW13eHEwNWNwMnZzNTZyZzRrMDN4In0.P2-EylpYdzmCgdASgAKC5g'
+        #parsed_location = quote(location+", Princeton, NJ 08544")
+        #response = requests.get("https://api.mapbox.com/geocoding/v5/mapbox.places/"+parsed_location+".json?access_token="+token)
+        #dict = json.loads(response.text)
+        #lon, lat = dict['features'][0]['center']
+        geolocator = Nominatim(user_agent="tiger-pickups")
+        place = geolocator.geocode(location+", Princeton, NJ 08544")
+        lat, lon = place.latitude, place.longitude
         QUERY_STRING = "INSERT INTO activities (id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description) VALUES (DEFAULT, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s);"
         cursor.execute(QUERY_STRING, [host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description])
         self._connection.commit()
