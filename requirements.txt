@@ -3,3 +3,4 @@ gunicorn==19.9.0
 psycopg2-binary
 cloudinary
 requests
+geopy
