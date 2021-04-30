@@ -90,9 +90,9 @@ class Database:
         cursor.execute('DROP TABLE IF EXISTS users;')
 
         cursor.execute('CREATE TABLE activities ' +
-            '(id SERIAL, host_net_id INTEGER, host_name TEXT, title TEXT, type TEXT, \
+            '(id SERIAL, host_net_id TEXT, host_name TEXT, title TEXT, type TEXT, \
             date TEXT, start_time TEXT, end_time TEXT, phone_number TEXT, \
-            location TEXT, min_students INTEGER, max_students INTEGER, description TEXT);')
+            location TEXT, lat TEXT, lon TEXT, min_students TEXT, max_students TEXT, description TEXT);')
 
         cursor.execute('CREATE TABLE users ' +
             '(net_id INTEGER, name TEXT, residence TEXT, preferences BYTEA, current_location TEXT, attending_events BYTEA, created_events BYTEA);')
@@ -104,7 +104,6 @@ class Database:
 if __name__ == "__main__":
     db = Database()
     db.connect()
-    db.create_activity("123", "Gabe", "End of Sem Party", "Party", "3200-12-24", "14%3A27", "14%3A28", "1234242132", "1915 Hall", "NaN", "NaN", "")
     print(db.get_activities())
     print("\n\n")
     lst_locations = db.get_locations()

@@ -17,7 +17,6 @@
         integrity="sha512-XQoYMqMTK8LvdxXYG3nZ448hOEQiglfqkJs1NOQV44cWnUrBc8PkAOcXy20w0vlaXaVUearIOBhiXZ5V3ynxwA=="
         crossorigin=""></script>
 
-        <link rel="stylesheet" href="{{ url_for('static', filename='leaflet-search.css') }}" />
 
         <title>Tiger PickUps</title>
         <style>
@@ -37,16 +36,59 @@
           img {
             filter: drop-shadow(0 0 1rem orange);
           }
+
+          #searchList {
+            overflow: hidden;
+            overflow-y: scroll;
+          }
+
+          .btn-info {
+            width: 4vw;
+            padding: 0px;
+            font-size: 80%;
+          }
+
+          /* .btn-info:active{
+              background:olive;
+          } */
         </style>
     </head>
     <body>
       {% include "navbar.html" %}
 
-      <div id="mapid" style="width: 100vw; height: 100vh; position: relative;"></div>
+      <div id="mapid" style="width: 100vw; height: 100vh; position: absolute;">
+      </div>
+      <div id="buttonContainer" style="width: 16vw; height: 10vh; top: 10vh; position: absolute; z-index: 1000;">
+        <form action="/select_activities" method="get">
+          <center>
+            <button id="all" class="btn btn-info" name="event_type" type="submit" value="all">Show all</button><br>
+            <button id="Party" class="btn btn-info" name="event_type" type="submit" value="Party">Parties</button>
+            <button id="Sports" class="btn btn-info" name="event_type" type="submit" value="Sports">Sports</button>
+            <button id="General" class="btn btn-info" name="event_type" type="submit" value="General">General</button>
+          </center>
+        </form>
+      </div>
+      <div id="searchList" style="width: 16vw; height: 70vh; top: 20vh; position: absolute; z-index: 1000; background-color: white;">
+        {% for activity in activities %}
+        <button id='{{activity[0]}}' type="button" class="btn btn-light {{activity[4]}}" style="width:100%;">
+          <b>{{activity[3]}}</b><br>
+          Type: {{activity[4]}}<br>
+          Time: {{activity[6]}} - {{activity[8]}}<br>
+          Host: {{activity[2]}}
+        </button><br>
+        {% endfor %}
+      </div>
+      <div id="searchField" style="width: 16vw; height: 10vh; bottom: 0vh; position: absolute; z-index: 1000; padding:10px;">
+        <center>
+        <form action="/select_activities" method="get">
+          <input type="text" name="search" placeholder="Search here" />
+        </form>
+      </center>
+      </div>
 
-      <script src="/static/leaflet-search.js"></script>
+      <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.0/jquery.min.js"></script>
       <script>
-        var mymap = L.map('mapid').setView([40.344863, -74.652751], 13);
+        var mymap = L.map('mapid').setView([40.349193, -74.659288], 15);
         mymap.addLayer(new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
@@ -68,22 +110,12 @@
 
         var generalIcon = L.icon({
             iconUrl: '/static/images/general-icon.png',
-            iconSize: [40, 40]
+            iconSize: [30, 30]
         });
 
         var markersLayer = new L.LayerGroup();	//layer contain searched elements
 
       	mymap.addLayer(markersLayer);
-
-        var controlSearch = new L.Control.Search({
-      		position:'bottomleft',
-      		layer: markersLayer,
-      		initial: false,
-      		zoom: 12,
-      		marker: false
-      	});
-
-        mymap.addControl(controlSearch);
 
         // Place all activities on map
         // id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description
@@ -101,28 +133,112 @@
         var icon = generalIcon;
         {% endif %}
         console.log(title);
-        var marker = new L.marker(new L.latLng([lat, lon]), {icon: icon}, {title: title}); // .addTo(mymap);
-        marker.bindPopup("<b>Host:</b> {{activity[2]}} <br>\
+        var marker{{activity[0]}} = new L.marker(new L.latLng([lat, lon]), {icon: icon}, {title: title}); // .addTo(mymap);
+        marker{{activity[0]}}.bindPopup("<b>Host:</b> {{activity[2]}} <br>\
                           <b>Location:</b> {{activity[9]}} <br>\
                           <b>Phone Num:</b> {{activity[8]}} <br>\
-                          <b>Max Capacity:</b> {{activity[13]}} <br>\
-                          <a href=\"https://www.google.com/maps/dir/?api=1&destination={{activity[9]}}\" target=\"_blank\">Get Directions</a>");
-        markersLayer.addLayer(marker);
+                          <b>Min Students:</b> {{activity[12]}} <br>\
+                          <b>Max Students:</b> {{activity[13]}} <br>\
+                          <b>Host Message:</b> {{activity[14]}} <br>\
+                          <a href=\"https://www.google.com/maps/dir/?api=1&destination={{activity[9]}}\" target=\"_blank\">Get Directions</a>").on('click', function(e) {
+                            mymap.setView(e.target.getLatLng());
+                          });
+
+        document.getElementById('{{activity[0]}}').addEventListener('click', function() {
+          console.log({{activity[0]}});
+          marker{{activity[0]}}.fire('click');
+        });
+        markersLayer.addLayer(marker{{activity[0]}});
         {% endfor %}
 
-        var popup = L.popup()
-            .setLatLng([40.349193, -74.659288])
-            .setContent("<h4>Welcome to Tiger Pickups!</h4>\
-            <br>\
-            <b>You can:</b>\
-            <ul><li>Search for Campus Activities</li>\
-            <li>Create Activities for Friends to Join</li>\
-            </ul>\
-            <br>\
-            **Open only to Princeton students**")
-            .openOn(mymap);
+        console.log(markersLayer);
 
-        mymap.zoomControl.setPosition('bottomright');
+        if (window.location.pathname == "/") {
+          var popup = L.popup()
+              .setLatLng([40.349193, -74.659288])
+              .setContent("<h4>Welcome to Tiger Pickups!</h4>\
+              <br>\
+              <b>You can:</b>\
+              <ul><li>Search for Campus Activities</li>\
+              <li>Create Activities for Friends to Join</li>\
+              </ul>\
+              <br>\
+              **Open only to Princeton students**")
+              .openOn(mymap);
+          }
+
+          mymap.zoomControl.setPosition('bottomright');
+
+
+          // function handleResponse(response) {
+          //   $('') = "/index";
+          // }
+          //
+          // var request = null;
+          //
+          // function submitForm() {
+          //   var host_net_id = $('#host-net-id').val();
+          //   var event_type = $('#event-type').val();
+          //   var event_title = $('#event-title').val();
+          //   var date = $('#date').val();
+          //   var start_time = $('#start-time').val();
+          //   var end_time = $('#end-time').val();
+          //   var phone_number = $('#phone-number').val();
+          //   var loc = $('#loc').select2('data')[0]['text'];
+          //   var min_students = $('#min-students').val();
+          //   var max_students = $('#max-students').val();
+          //   var description = $('#description').val();
+          //
+          //   if (host_net_id != '' && event_type != '' && event_title != '' && date != '' && start_time != '') {
+          //     if (loc == "--None--") {
+          //       alert("Please choose a location.");
+          //     }
+          //     else {
+          //       host_net_id = encodeURIComponent(host_net_id);
+          //       event_type = encodeURIComponent(event_type);
+          //       event_title = encodeURIComponent(event_title);
+          //       date = encodeURIComponent(date);
+          //       start_time = encodeURIComponent(start_time);
+          //       end_time = encodeURIComponent(end_time);
+          //       phone_number = encodeURIComponent(phone_number);
+          //       loc = encodeURIComponent(loc);
+          //       min_students = encodeURIComponent(min_students);
+          //       max_students = encodeURIComponent(max_students);
+          //       description = encodeURIComponent(description);
+          //
+          //
+          //       var url = '/save_form?host_net_id=' + host_net_id
+          //          + '&event_type=' + event_type
+          //          + '&event_title=' + event_title
+          //          + '&date=' + date
+          //          + '&start_time=' + start_time
+          //          + '&end_time=' + end_time
+          //          + '&phone_number=' + phone_number
+          //          + '&loc=' + loc
+          //          + '&min_students=' + min_students
+          //          + '&max_students=' + max_students
+          //          + '&description=' + description
+          //
+          //       console.log(url);
+          //
+          //       if (request != null) {
+          //            request.abort();
+          //          }
+          //
+          //        request = $.ajax(
+          //          {
+          //            type: 'POST',
+          //            url: url,
+          //            success: handleResponse
+          //          }
+          //        );
+          //      }
+          //    }
+          // }
+
+
+
+
 
       </script>
 
