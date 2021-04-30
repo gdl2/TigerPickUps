@@ -4,7 +4,7 @@
 # psql -h localhost -p 5432 -U "username" -d cycdb
 # Code adapted from COS 333 lectures
 #-----------------------------------------------------------------------
-from os import path
+from os import path, environ
 from sys import argv, stderr, exit
 from psycopg2 import connect
 from random import randint
