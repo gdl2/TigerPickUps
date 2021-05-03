@@ -42,15 +42,7 @@
             overflow-y: scroll;
           }
 
-          .btn-info {
-            width: 4vw;
-            padding: 0px;
-            font-size: 80%;
-          }
 
-          /* .btn-info:active{
-              background:olive;
-          } */
         </style>
     </head>
     <body>
@@ -58,7 +50,7 @@
 
       <div id="mapid" style="width: 100vw; height: 100vh; position: absolute;">
       </div>
-      <div id="buttonContainer" style="width: 16vw; height: 10vh; top: 10vh; position: absolute; z-index: 1000;">
+      <!-- <div id="buttonContainer" style="width: 16vw; height: 10vh; top: 10vh; position: absolute; z-index: 1000;">
         <form action="/select_activities" method="get">
           <center>
             <button id="all" class="btn btn-info" name="event_type" type="submit" value="all">Show all</button><br>
@@ -67,8 +59,8 @@
             <button id="General" class="btn btn-info" name="event_type" type="submit" value="General">General</button>
           </center>
         </form>
-      </div>
-      <div id="searchList" style="width: 16vw; height: 70vh; top: 20vh; position: absolute; z-index: 1000; background-color: white;">
+      </div> -->
+      <div id="searchList" style="width: 16vw; height: 60vh; top: 10vh; position: absolute; z-index: 1000; background-color: rgba(255,255,255,0.5);">
         {% for activity in activities %}
         <button id='{{activity[0]}}' type="button" class="btn btn-light {{activity[4]}}" style="width:100%;">
           <b>{{activity[3]}}</b><br>
@@ -78,10 +70,20 @@
         </button><br>
         {% endfor %}
       </div>
-      <div id="searchField" style="width: 16vw; height: 10vh; bottom: 0vh; position: absolute; z-index: 1000; padding:10px;">
+      <div id="searchField" style="width: 16vw; height: 30vh; bottom: 0vh; position: absolute; z-index: 1000; padding-top: 1vh; background-color: rgba(255,255,255,0.5);">
         <center>
         <form action="/select_activities" method="get">
+          <label for="event_type">Event Type</label> <input list="event_types" name="event_type" value={{event_type}} id="event_type" style="width: 8vw;"> <br>
+          <datalist id="event_types">
+               <option value="All">
+               <option value="Parties">
+               <option value="Sports">
+               <option value="General">
+          </datalist>
+          <label for="date">Date</label> <input type="date" name="date" id="date" value={{date}} style="width: 12vw;">
           <input type="text" name="search" placeholder="Search here" />
+          <br><br>
+          <button type="submit" class="btn btn-info">Search</button>
         </form>
       </center>
       </div>
@@ -162,84 +164,11 @@
               <ul><li>Search for Campus Activities</li>\
               <li>Create Activities for Friends to Join</li>\
               </ul>\
-              <br>\
               **Open only to Princeton students**")
               .openOn(mymap);
           }
 
           mymap.zoomControl.setPosition('bottomright');
-
-
-          // function handleResponse(response) {
-          //   $('') = "/index";
-          // }
-          //
-          // var request = null;
-          //
-          // function submitForm() {
-          //   var host_net_id = $('#host-net-id').val();
-          //   var event_type = $('#event-type').val();
-          //   var event_title = $('#event-title').val();
-          //   var date = $('#date').val();
-          //   var start_time = $('#start-time').val();
-          //   var end_time = $('#end-time').val();
-          //   var phone_number = $('#phone-number').val();
-          //   var loc = $('#loc').select2('data')[0]['text'];
-          //   var min_students = $('#min-students').val();
-          //   var max_students = $('#max-students').val();
-          //   var description = $('#description').val();
-          //
-          //   if (host_net_id != '' && event_type != '' && event_title != '' && date != '' && start_time != '') {
-          //     if (loc == "--None--") {
-          //       alert("Please choose a location.");
-          //     }
-          //     else {
-          //       host_net_id = encodeURIComponent(host_net_id);
-          //       event_type = encodeURIComponent(event_type);
-          //       event_title = encodeURIComponent(event_title);
-          //       date = encodeURIComponent(date);
-          //       start_time = encodeURIComponent(start_time);
-          //       end_time = encodeURIComponent(end_time);
-          //       phone_number = encodeURIComponent(phone_number);
-          //       loc = encodeURIComponent(loc);
-          //       min_students = encodeURIComponent(min_students);
-          //       max_students = encodeURIComponent(max_students);
-          //       description = encodeURIComponent(description);
-          //
-          //
-          //       var url = '/save_form?host_net_id=' + host_net_id
-          //          + '&event_type=' + event_type
-          //          + '&event_title=' + event_title
-          //          + '&date=' + date
-          //          + '&start_time=' + start_time
-          //          + '&end_time=' + end_time
-          //          + '&phone_number=' + phone_number
-          //          + '&loc=' + loc
-          //          + '&min_students=' + min_students
-          //          + '&max_students=' + max_students
-          //          + '&description=' + description
-          //
-          //       console.log(url);
-          //
-          //       if (request != null) {
-          //            request.abort();
-          //          }
-          //
-          //        request = $.ajax(
-          //          {
-          //            type: 'POST',
-          //            url: url,
-          //            success: handleResponse
-          //          }
-          //        );
-          //      }
-          //    }
-          // }
-
-
-
-
-
       </script>
 
 

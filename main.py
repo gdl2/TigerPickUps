@@ -27,12 +27,15 @@ def index():
     results = []
 
     present = datetime.now()
+    current_day = present.strftime("%Y-%m-%d")
     for activity in all_lst_activities:
-        date_time_str = activity[5] + ' ' + activity[6]
-        date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
-        if (present < date_time_obj):
-            results.append(activity)
-    html = render_template('index.html', mapbox_access_token = token, activities = results)
+        if current_day == activity[5]:
+            date_time_str = activity[5] + ' ' + activity[6]
+            date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
+            if (present < date_time_obj):
+                results.append(activity)
+    current_day = present.strftime("%Y-%m-%d")
+    html = render_template('index.html', mapbox_access_token = token, activities = results, event_type = "All", date = current_day)
     response = make_response(html)
     return response
 
@@ -46,16 +49,23 @@ def select_activities():
     # id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description
 
     valid_activities = []
+    selected_day_str = request.args.get('date')
     present = datetime.now()
+    current_day = present.strftime("%Y-%m-%d")
     for activity in all_lst_activities:
-        date_time_str = activity[5] + ' ' + activity[6]
-        date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
-        if (present < date_time_obj):
-            valid_activities.append(activity)
+        if (selected_day_str == current_day):
+            if current_day == activity[5]:
+                date_time_str = activity[5] + ' ' + activity[6]
+                date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
+                if (present < date_time_obj):
+                    valid_activities.append(activity)
+        else:
+            if selected_day_str == activity[5]:
+                valid_activities.append(activity)
 
     chosen_lst_activities = []
     event_type = request.args.get('event_type')
-    if (event_type is None) or (event_type == "all"):
+    if (event_type is None) or (event_type == "All"):
         chosen_lst_activities = valid_activities
     else:
         for activity in valid_activities:
@@ -71,7 +81,7 @@ def select_activities():
             if search.lower() in activity[3].lower():
                 results.append(activity)
 
-    html = render_template('index.html', mapbox_access_token = token, activities = results)
+    html = render_template('index.html', mapbox_access_token = token, activities = results, event_type = event_type, date = selected_day_str)
     response = make_response(html)
     return response
 
