@@ -65,7 +65,7 @@
         <button id='{{activity[0]}}' type="button" class="btn btn-light {{activity[4]}}" style="width:100%;">
           <b>{{activity[3]}}</b><br>
           Type: {{activity[4]}}<br>
-          Time: {{activity[6]}} - {{activity[8]}}<br>
+          Time: {{activity[6]}} - {{activity[7]}}<br>
           Host: {{activity[2]}}
         </button><br>
         {% endfor %}
@@ -73,13 +73,14 @@
       <div id="searchField" style="width: 16vw; height: 30vh; bottom: 0vh; position: absolute; z-index: 1000; padding-top: 1vh; background-color: rgba(255,255,255,0.5);">
         <center>
         <form action="/select_activities" method="get">
-          <label for="event_type">Event Type</label> <input list="event_types" name="event_type" value={{event_type}} id="event_type" style="width: 8vw;"> <br>
-          <datalist id="event_types">
-               <option value="All">
-               <option value="Parties">
-               <option value="Sports">
-               <option value="General">
-          </datalist>
+          <label for="event_type">Event Type</label>
+          <select name="event_type" id="event_types">
+            <option value="All">All</option>
+            <option value="Party">Parties</option>
+            <option value="Sports">Sports</option>
+            <option value="General">General</option>
+          </select>
+          <br>
           <label for="date">Date</label> <input type="date" name="date" id="date" value={{date}} style="width: 12vw;">
           <input type="text" name="search" placeholder="Search here" />
           <br><br>

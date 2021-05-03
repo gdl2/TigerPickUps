@@ -134,6 +134,17 @@ def save_form():
     max_students = request.args.get('max_students')
     description = request.args.get('description')
 
+    if start_time.split()[1] == 'PM':
+        start_time = str(int(start_time[:2])+12) + ":" + start_time[3:5]
+    else:
+        start_time = start_time[:5]
+
+    if end_time != '':
+        if end_time.split()[1] == 'PM':
+            end_time = str(int(end_time[:2])+12) + ":" + end_time[3:5]
+        else:
+            end_time = end_time[:5]
+
     if (min_students == "undefined") or (min_students == ''):
         min_students = ''
     if (max_students == "undefined") or (max_students == ''):
