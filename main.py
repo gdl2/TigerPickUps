@@ -8,6 +8,7 @@ from flask import Flask, render_template, make_response, url_for, redirect, requ
 from database import Database
 import requests
 from urllib.parse import urlencode, quote
+from datetime import datetime
 
 #-------------------------------------------------------------------------------
 
@@ -23,8 +24,15 @@ def index():
     db.connect()
     all_lst_activities = db.get_activities()
     db.disconnect()
+    results = []
 
-    html = render_template('index.html', mapbox_access_token = token, activities = all_lst_activities)
+    present = datetime.now()
+    for activity in all_lst_activities:
+        date_time_str = activity[5] + ' ' + activity[6]
+        date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
+        if (present < date_time_obj):
+            results.append(activity)
+    html = render_template('index.html', mapbox_access_token = token, activities = results)
     response = make_response(html)
     return response
 
@@ -36,12 +44,21 @@ def select_activities():
     all_lst_activities = db.get_activities()
     db.disconnect()
     # id, host_net_id, host_name, title, type, date, start_time, end_time, phone_number, location, lat, lon, min_students, max_students, description
+
+    valid_activities = []
+    present = datetime.now()
+    for activity in all_lst_activities:
+        date_time_str = activity[5] + ' ' + activity[6]
+        date_time_obj = datetime.strptime(date_time_str, '%Y-%m-%d %H:%M')
+        if (present < date_time_obj):
+            valid_activities.append(activity)
+
     chosen_lst_activities = []
     event_type = request.args.get('event_type')
     if (event_type is None) or (event_type == "all"):
-        chosen_lst_activities = all_lst_activities
+        chosen_lst_activities = valid_activities
     else:
-        for activity in all_lst_activities:
+        for activity in valid_activities:
             if activity[4] == event_type:
                 chosen_lst_activities.append(activity)
 
@@ -107,14 +124,10 @@ def save_form():
     max_students = request.args.get('max_students')
     description = request.args.get('description')
 
-    if phone_number == '':
-        phone_number = 'Na'
     if (min_students == "undefined") or (min_students == ''):
-        min_students = 'Na'
+        min_students = ''
     if (max_students == "undefined") or (max_students == ''):
-        max_students = 'Na'
-    if description == '':
-        description = "Na"
+        max_students = ''
 
 
 

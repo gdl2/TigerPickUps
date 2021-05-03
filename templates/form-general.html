@@ -67,18 +67,21 @@
             </div>
         </div>
 
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
         <div class="row">
             <div class="col-md-4">
-                <label>Location*</label>
-                <select class="select2" id="loc">
-                  <option>--None--</option>
-                   <option>Palmer Square</option>
-                   <option>Nassau</option>
-                   <option>Fountain of Freedom</option>
-                </select>
+              <label for="loc">Location*</label>
+              <input list="locations" id="loc" required>
+              <datalist id="locations">
+                   <option value="Palmer Square">
+                   <option value="Nassau">
+                   <option value="Fountain of Freedom">
+                   <option value="Lewis Arts Complex">
+                   <option value="McCarter Theater Center">
+                   <option value="Nassau Hall">
+                   <option value="Frick Chemistry Laboratory">
+                   <option value="Dodge-Osborn Hall">
+                   <option value="Frist Campus Center">
+              </datalist>
             </div>
         </div>
 
@@ -118,16 +121,12 @@
             var start_time = $('#start-time').val();
             var end_time = $('#end-time').val();
             var phone_number = $('#phone-number').val();
-            var loc = $('#loc').select2('data')[0]['text'];
+            var loc = $('#loc').val();
             var min_students = $('#min-students').val();
             var max_students = $('#max-students').val();
             var description = $('#description').val();
 
-            if (host_name != '' && event_type != '' && event_title != '' && date != '' && start_time != '') {
-              if (loc == "--None--") {
-                alert("Please choose a location.");
-              }
-              else {
+            if (host_name != '' && event_type != '' && event_title != '' && date != '' && start_time != '' && loc != '') {
                 host_name = encodeURIComponent(host_name);
                 event_type = encodeURIComponent(event_type);
                 event_title = encodeURIComponent(event_title);
@@ -167,7 +166,6 @@
                    }
                  );
                }
-             }
           }
 
           function setup() {

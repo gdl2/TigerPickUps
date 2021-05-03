@@ -67,26 +67,30 @@
             </div>
         </div>
 
-        <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
-        <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
-
         <div class="row">
             <div class="col-md-4">
-                <label>Location*</label>
-                <select class="select2" id="loc">
-                  <option>--None--</option>
-                  <option>Cannon Dial Elm Club</option>
-                  <option>Tower Club</option>
-                  <option>Terrace Club</option>
-                  <option>Cloister Inn</option>
-                  <option>Cap & Gown Club</option>
-                  <option>Ivy Club</option>
-                  <option>Quadrangle Club</option>
-                  <option>Charter Club</option>
-                  <option>Cottage Club</option>
-                  <option>Tiger Inn</option>
-                  <option>Colonial Club</option>
-                </select>
+              <label for="loc">Location*</label>
+              <input list="locations" id="loc" required>
+              <datalist id="locations">
+                  <option value="Cannon Dial Elm Club">
+                  <option value="Tower Club">
+                  <option value="Terrace Club">
+                  <option value="Cloister Inn">
+                  <option value="Cap & Gown Club">
+                  <option value="Ivy Club">
+                  <option value="Quadrangle Club">
+                  <option value="Charter Club">
+                  <option value="Cottage Club">
+                  <option value="Tiger Inn">
+                  <option value="Colonial Club">
+                  <option value="Prospect House & Garden">
+                  <option value="Fountain of Freedom">
+                  <option value="Butler College">
+                  <option value="Matthey College">
+                  <option value="Whitman College">
+                  <option value="Rockefeller College">
+                  <option value="First College">
+              </datalist>
             </div>
         </div>
 
@@ -133,16 +137,12 @@
             var start_time = $('#start-time').val();
             var end_time = $('#end-time').val();
             var phone_number = $('#phone-number').val();
-            var loc = $('#loc').select2('data')[0]['text'];
+            var loc = $('#loc').val();
             var min_students = $('#min-students').val();
             var max_students = $('#max-students').val();
             var description = $('#description').val();
 
-            if (host_name != '' && event_type != '' && event_title != '' && date != '' && start_time != '') {
-              if (loc == "--None--") {
-                alert("Please choose a location.");
-              }
-              else {
+            if (host_name != '' && event_type != '' && event_title != '' && date != '' && start_time != '' && loc != '') {
                 host_name = encodeURIComponent(host_name);
                 event_type = encodeURIComponent(event_type);
                 event_title = encodeURIComponent(event_title);
@@ -181,7 +181,6 @@
                      success: handleResponse
                    }
                  );
-               }
              }
           }
 
