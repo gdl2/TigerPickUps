@@ -33,10 +33,6 @@
             z-index: 1;
           }
 
-          img {
-            filter: drop-shadow(0 0 1rem orange);
-          }
-
           #searchList {
             overflow: hidden;
             overflow-y: scroll;
@@ -50,16 +46,7 @@
 
       <div id="mapid" style="width: 100vw; height: 100vh; position: absolute;">
       </div>
-      <!-- <div id="buttonContainer" style="width: 16vw; height: 10vh; top: 10vh; position: absolute; z-index: 1000;">
-        <form action="/select_activities" method="get">
-          <center>
-            <button id="all" class="btn btn-info" name="event_type" type="submit" value="all">Show all</button><br>
-            <button id="Party" class="btn btn-info" name="event_type" type="submit" value="Party">Parties</button>
-            <button id="Sports" class="btn btn-info" name="event_type" type="submit" value="Sports">Sports</button>
-            <button id="General" class="btn btn-info" name="event_type" type="submit" value="General">General</button>
-          </center>
-        </form>
-      </div> -->
+
       <div id="searchList" style="width: 16vw; height: 60vh; top: 10vh; position: absolute; z-index: 1000; background-color: rgba(255,255,255,0.5);">
         {% for activity in activities %}
         <button id='{{activity[0]}}' type="button" class="btn btn-light {{activity[4]}}" style="width:100%;">
@@ -95,7 +82,7 @@
         mymap.addLayer(new L.tileLayer('https://api.mapbox.com/styles/v1/{id}/tiles/{z}/{x}/{y}?access_token={accessToken}', {
             attribution: 'Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors, Imagery © <a href="https://www.mapbox.com/">Mapbox</a>',
             maxZoom: 18,
-            id: 'mapbox/streets-v11',
+            id: 'mapbox/light-v9',
             tileSize: 512,
             zoomOffset: -1,
             accessToken: '{{mapbox_access_token}}'

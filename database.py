@@ -23,14 +23,14 @@ class Database:
     def connect(self):
         try:
             ############ Needed for Heroku deployment
-            DATABASE_URL = environ['DATABASE_URL']
-            self._connection = connect(
-                DATABASE_URL, sslmode='require')
+            # DATABASE_URL = environ['DATABASE_URL']
+            # self._connection = connect(
+            #     DATABASE_URL, sslmode='require')
 
             ############# Needed for local deployment
-            # self._connection = connect(
-            #     host='localhost', port=5432, user='gabe', password='xxx',
-            #     database='tigerpickupsdb')
+            self._connection = connect(
+                host='localhost', port=5432, user='gabe', password='xxx',
+                database='tigerpickupsdb')
         except Exception as e:
             print(e, file = stderr)
             exit(1)
